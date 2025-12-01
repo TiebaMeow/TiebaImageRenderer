@@ -103,7 +103,7 @@
         <div class="container" v-if="data.title">
             <div class="prefix" v-if="data.prefix" v-html="data.prefix"></div>
             <div class="header">
-                <img :src="`${data.host}/resources/portrait/${data.user.portrait}`" class="avatar" alt="avatar"
+                <img :src="`${data.host}/resources/portrait/${data.user.portrait}?size=l`" class="avatar" alt="avatar"
                     v-if="data.user.portrait">
                 <div class="user-info">
                     <span class="username">{{ data.user.username }}</span>
