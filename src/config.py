@@ -7,6 +7,7 @@ class Config(BaseModel):
     host: str = "localhost"
     port: int = 39334
     key: str = ""
+    renderer_scale: float = 1.0
 
 
 def load_config(path: str) -> Config:

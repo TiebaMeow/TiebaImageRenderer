@@ -1,4 +1,3 @@
-import json
 import asyncio
 from pathlib import Path
 from typing import Any, Optional
@@ -38,7 +37,7 @@ class Renderer:
         if not self.browser:
             raise RuntimeError("Browser failed to start")
 
-        page = await self.browser.new_page()
+        page = await self.browser.new_page(device_scale_factor=config.renderer_scale)
         try:
             url = Path(path).absolute().as_uri()
             width = params.width or DEFAULT_PAGE_WIDTH
