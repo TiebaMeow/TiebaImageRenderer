@@ -26,7 +26,7 @@ class ContentData(BaseModel):
 
 class ContentRenderRequest(RenderParam):
     data: ContentData
-    width: int | None = 400
+    width: int | None = 550 # w
 
 
 @app.post("/renderer/content")
