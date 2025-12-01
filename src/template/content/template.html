@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Renderer</title>
+    <script src="vue.global.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            padding-bottom: 0;
+            border-radius: 8px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: bold;
+        }
+
+        .sub {
+            font-size: 0.8em;
+            color: gray;
+            padding: 2px;
+            border-radius: 4px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .text {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .images {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .images img {
+            max-width: 100px;
+            border-radius: 4px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #999;
+            font-size: 0.9em;
+            text-align: right;
+        }
+
+        .prefix {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .suffix {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container" v-if="data.title">
+            <div class="prefix" v-if="data.prefix" v-html="data.prefix"></div>
+            <div class="header">
+                <img :src="`${data.host}/resources/portrait/${data.user.portrait}`" class="avatar" alt="avatar"
+                    v-if="data.user.portrait">
+                <div class="user-info">
+                    <span class="username">{{ data.user.username }}</span>
+                    <span class="sub">Lv.{{ data.user.level }} · {{ formatDate(data.create_time) }}</span>
+                </div>
+            </div>
+            <div class="title">{{ data.title }}</div>
+            <div class="text">{{ data.text }}</div>
+            <div class="images" v-if="data.images && data.images.length">
+                <img v-for="(img, index) in data.images" :key="index" :src="`${data.host}/resources/image/${img}`"
+                    alt="image">
+            </div>
+            <div class="suffix" v-if="data.suffix" v-html="data.suffix"></div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, reactive, nextTick } = Vue;
+
+        const app = createApp({
+            setup() {
+                const data = reactive({
+                    host: '',
+                    title: '',
+                    text: '',
+                    images: [],
+                    user: {
+                        username: '',
+                        portrait: '',
+                        level: 0
+                    },
+                    create_time_string: 0,
+                    prefix: '',
+                    suffix: ''
+                });
+
+                const formatDate = (unixTimestamp) => {
+                    // 将Unix时间戳转换为毫秒（JavaScript的Date对象使用毫秒）
+                    const date = new Date(unixTimestamp * 1000)
+
+                    // 获取年、月、日、小时和分钟
+                    const month = date.getMonth() + 1 // 月份从0开始，所以需要加1
+                    const day = date.getDate()
+                    const hours = date.getHours()
+                    const minutes = date.getMinutes()
+
+                    // 格式化日期和时间
+                    return `${month}月${day}日 ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+                }
+
+                window.init = async (newData) => {
+                    console.log("Init called with", newData);
+                    Object.assign(data, newData);
+
+                    await nextTick();
+
+                    // Wait for images to load
+                    await waitForImages();
+
+                    // Signal completion
+                    const div = document.createElement('div');
+                    div.id = 'render-complete';
+                    document.body.appendChild(div);
+                    console.log("Render complete");
+                };
+
+                return { data, formatDate };
+            }
+        });
+
+        app.mount('#app');
+
+        function waitForImages() {
+            const images = document.querySelectorAll('img');
+            console.log(`Waiting for ${images.length} images`);
+            const promises = Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = () => resolve();
+                    img.onerror = () => resolve(); // Resolve even on error to avoid hanging
+                });
+            });
+            return Promise.all(promises);
+        }
+    </script>
+</body>
+
+</html>
