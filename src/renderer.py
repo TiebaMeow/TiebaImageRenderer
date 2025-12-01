@@ -14,7 +14,7 @@ class RenderParam(BaseModel):
     data: Any
     width: int | None = None
     timeout: int = 5000
-    host: str = f"http://{config.host if config.host == '0.0.0.0' else 'localhost'}:{config.port}"
+    host: str = f"http://{'localhost' if config.host == '0.0.0.0' else config.host}:{config.port}"
 
 
 class Renderer:
@@ -51,7 +51,7 @@ class Renderer:
                 if isinstance(params.data, BaseModel)
                 else params.data
             )
-            data['host'] = params.host
+            data["host"] = params.host
             await page.evaluate("(data) => window.init(data)", data)
 
             # Wait for render completion signal
