@@ -12,6 +12,9 @@ dependencies = [
     "playwright>=1.56.0",
     "ruff>=0.14.7",
     "uvicorn>=0.38.0",
+    "weasyprint>=62.0",
+    "jinja2>=3.1.0",
+    "pdf2image>=1.17.0",
 ]
 
 [[tool.uv.index]]
