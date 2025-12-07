@@ -35,6 +35,12 @@ class ContentRenderRequest(BaseModel):
     host: str = "http://localhost:39334"
 
 
+# Load template once at module startup
+_TEMPLATE_PATH = Path(__file__).parent / "template_weasyprint.html"
+with open(_TEMPLATE_PATH, "r", encoding="utf-8") as f:
+    _TEMPLATE = Template(f.read())
+
+
 def format_create_time(unix_timestamp: int) -> str:
     """Format Unix timestamp to Chinese date format."""
     dt = datetime.fromtimestamp(unix_timestamp)
@@ -42,22 +48,12 @@ def format_create_time(unix_timestamp: int) -> str:
 
 
 @app.post("/renderer/content")
-async def render_content(request: ContentRenderRequest):
-    # Resolve template path relative to this file
-    template_path = Path(__file__).parent / "template_weasyprint.html"
-    
-    # Read the template
-    with open(template_path, "r", encoding="utf-8") as f:
-        template_content = f.read()
-    
-    # Create Jinja2 template
-    template = Template(template_content)
-    
+def render_content(request: ContentRenderRequest):
     # Format the create_time
     create_time_formatted = format_create_time(request.data.create_time)
     
     # Render the HTML with data
-    html_content = template.render(
+    html_content = _TEMPLATE.render(
         data=request.data.model_dump(),
         host=request.host,
         create_time_formatted=create_time_formatted
@@ -67,7 +63,7 @@ async def render_content(request: ContentRenderRequest):
     page_css = CSS(string=f'@page {{ size: {request.width}px auto; margin: 0; }}')
     
     # Generate PDF using WeasyPrint
-    html_doc = HTML(string=html_content, base_url=str(template_path.parent))
+    html_doc = HTML(string=html_content, base_url=str(_TEMPLATE_PATH.parent))
     pdf_bytes = html_doc.write_pdf(stylesheets=[page_css])
     
     # Convert PDF to image
