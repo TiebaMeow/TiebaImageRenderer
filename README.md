@@ -1,11 +1,11 @@
 # TiebaImageRenderer
 
-TiebaImageRenderer 是一个基于 **FastAPI**、**Playwright** 和 **Vue.js** 的高性能渲染服务，旨在将百度贴吧的内容（如帖子、评论等）动态渲染为图片。
+TiebaImageRenderer 是一个基于 **FastAPI**、**nonebot-plugin-htmlkit** 和 **Jinja2** 的高性能渲染服务，旨在将百度贴吧的内容（如帖子、评论等）动态渲染为图片。
 
 ## 🚀 功能特性
 
-- **基于 Web 技术栈**: 使用 Vue.js 编写渲染模板，易于开发和维护样式。
-- **高质量截图**: 利用 Playwright 进行无头浏览器渲染，支持现代 CSS 特性。
+- **基于 Web 技术栈**: 使用 Jinja2 编写渲染模板，易于开发和维护样式。
+- **高质量截图**: 利用 nonebot-plugin-htmlkit (基于 litehtml) 进行轻量级 HTML 渲染。
 - **模块化设计**: 模板与业务逻辑分离，易于扩展新的渲染类型。
 - **自动发现**: 自动加载 `src/template/` 下的渲染模块。
 
@@ -21,8 +21,26 @@ TiebaImageRenderer 是一个基于 **FastAPI**、**Playwright** 和 **Vue.js** �
 # 安装项目依赖
 uv sync
 
-# 安装 Playwright 浏览器内核 (必须)
-uv run playwright install chromium
+# 安装 nonebot-plugin-htmlkit (必须)
+# 注意: htmlkit 需要从源码编译，请参考以下步骤：
+
+# 1. 安装 xmake 构建工具
+curl -fsSL https://xmake.io/shget.text | bash
+
+# 2. 克隆 htmlkit 仓库并构建
+git clone --recursive https://github.com/nonebot/plugin-htmlkit.git
+cd plugin-htmlkit
+uv sync --no-install-workspace
+source .venv/bin/activate
+xmake config -m releasedbg
+xmake build
+xmake install
+uv sync --reinstall-package nonebot-plugin-htmlkit
+
+# 3. 在主项目中安装构建好的 htmlkit
+# 返回主项目目录并将 htmlkit 链接到项目环境
+cd /path/to/TiebaImageRenderer
+uv pip install /path/to/plugin-htmlkit
 ```
 
 ### 2. 启动服务
@@ -100,9 +118,9 @@ TiebaImageRenderer/
 │   ├── api/            # FastAPI 核心服务
 │   ├── template/       # 渲染模板目录
 │   │   └── content/    # 示例：内容渲染模块
-│   │       ├── content_renderer.py  # 路由与数据模型
-│   │       └── template.html        # Vue 渲染模板
-│   ├── renderer.py     # Playwright 渲染引擎封装
+│   │       ├── content_renderer.py     # 路由与数据模型
+│   │       └── template_htmlkit.html   # Jinja2 渲染模板
+│   ├── renderer_htmlkit.py  # htmlkit 渲染引擎封装
 │   └── ...
 ├── config.toml         # 配置文件
 └── start.py            # 启动脚本
@@ -111,6 +129,7 @@ TiebaImageRenderer/
 ## 📝 开发新模板
 
 1. 在 `src/template/` 下创建一个新目录（例如 `my_feature`）。
-2. 创建 `template.html`，使用 Vue.js 编写界面，并实现 `window.init(data)` 方法接收数据。
+2. 创建 `template.html`，使用 Jinja2 模板语法编写界面，可以使用模板变量如 `{{ variable }}`。
 3. 创建 `my_feature_renderer.py`，定义 Pydantic 模型并注册 FastAPI 路由。
-4. 重启服务，新路由将被自动加载。
+4. 在渲染器中调用 `renderer.render(template_path, request)` 来渲染模板。
+5. 重启服务，新路由将被自动加载。
