@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Renderer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            padding-bottom: 0px;
+            border-radius: 8px;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: bold;
+        }
+
+        .sub {
+            font-size: 0.8em;
+            color: gray;
+            padding: 2px;
+            border-radius: 4px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .text {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .images {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .images img {
+            max-width: 100px;
+            border-radius: 4px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #999;
+            font-size: 0.9em;
+            text-align: right;
+        }
+
+        .prefix {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .suffix {
+            padding: 20px 0;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    {% if title %}
+    <div class="container">
+        {% if prefix %}
+        <div class="prefix">{{ prefix | safe }}</div>
+        {% endif %}
+        
+        <div class="header">
+            {% if user.portrait %}
+            <img src="{{ host }}/resources/portrait/{{ user.portrait }}?size=l" class="avatar" alt="avatar">
+            {% endif %}
+            <div class="user-info">
+                <span class="username">{{ user.username }}</span>
+                <span class="sub">Lv.{{ user.level }} · {{ create_time | format_time }}</span>
+            </div>
+        </div>
+        
+        <div class="title">{{ title }}</div>
+        <div class="text">{{ text }}</div>
+        
+        {% if images and images | length > 0 %}
+        <div class="images">
+            {% for img in images %}
+            <img src="{{ host }}/resources/image/{{ img }}" alt="image">
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if suffix %}
+        <div class="suffix">{{ suffix | safe }}</div>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+
+</html>

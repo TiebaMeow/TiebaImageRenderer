@@ -4,7 +4,7 @@ from fastapi import Response
 from pydantic import BaseModel
 
 
-from src.renderer import renderer, RenderParam
+from src.renderer_htmlkit import renderer, RenderParam
 from src.api.server import app
 
 
@@ -32,11 +32,10 @@ class ContentRenderRequest(RenderParam):
 @app.post("/renderer/content")
 async def render_content(request: ContentRenderRequest):
     # Resolve template path relative to this file
-    # This file is in src/template/content/
-    # template.html is in src/template/
+    # Use the htmlkit-compatible Jinja2 template
 
     screenshot, is_complete = await renderer.render(
-        Path(__file__).parent / "template.html", request
+        Path(__file__).parent / "template_htmlkit.html", request
     )
 
     headers = {"complete": "true" if is_complete else "false"}

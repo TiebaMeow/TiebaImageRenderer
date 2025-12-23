@@ -1,3 +1,15 @@
+"""
+DEPRECATED: This module is replaced by renderer_htmlkit.py
+
+This was the original Playwright-based renderer.
+Kept for reference only. Do not use in new code.
+
+Migration notes:
+- Replaced Playwright with nonebot-plugin-htmlkit
+- Replaced Vue.js templates with Jinja2 templates
+- API interface (RenderParam) remains compatible
+"""
+
 import asyncio
 from pathlib import Path
 from typing import Any, Optional
