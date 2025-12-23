@@ -2,12 +2,15 @@
 
 TiebaImageRenderer 是一个基于 **FastAPI**、**nonebot-plugin-htmlkit** 和 **Jinja2** 的高性能渲染服务，旨在将百度贴吧的内容（如帖子、评论等）动态渲染为图片。
 
+> **📢 重要更新**: 本项目已从 Playwright 迁移到 nonebot-plugin-htmlkit。如果你是从旧版本升级，请查看 [迁移指南](MIGRATION.md)。
+
 ## 🚀 功能特性
 
-- **基于 Web 技术栈**: 使用 Jinja2 编写渲染模板，易于开发和维护样式。
-- **高质量截图**: 利用 nonebot-plugin-htmlkit (基于 litehtml) 进行轻量级 HTML 渲染。
-- **模块化设计**: 模板与业务逻辑分离，易于扩展新的渲染类型。
-- **自动发现**: 自动加载 `src/template/` 下的渲染模块。
+- **轻量高效**: 使用 litehtml 引擎，比 Playwright 更快、占用资源更少
+- **基于 Web 技术栈**: 使用 Jinja2 编写渲染模板，易于开发和维护样式
+- **高质量截图**: 利用 nonebot-plugin-htmlkit (基于 litehtml) 进行轻量级 HTML 渲染
+- **模块化设计**: 模板与业务逻辑分离，易于扩展新的渲染类型
+- **自动发现**: 自动加载 `src/template/` 下的渲染模块
 
 ## 🛠️ 安装与使用
 
@@ -41,6 +44,15 @@ uv sync --reinstall-package nonebot-plugin-htmlkit
 # 返回主项目目录并将 htmlkit 链接到项目环境
 cd /path/to/TiebaImageRenderer
 uv pip install /path/to/plugin-htmlkit
+```
+
+**验证安装**:
+```bash
+# 运行验证脚本确保模板正确渲染
+python verify_migration.py
+
+# 验证 htmlkit 已安装
+python -c "from nonebot_plugin_htmlkit import html_to_pic; print('✓ htmlkit installed!')"
 ```
 
 ### 2. 启动服务
