@@ -8,9 +8,13 @@ This script tests that:
 
 Note: This does NOT test actual image generation, which requires
 nonebot-plugin-htmlkit to be installed and compiled.
+
+Some imports are done inside functions to gracefully handle missing
+optional dependencies (like FastAPI) without failing the entire script.
 """
 
 import asyncio
+import tempfile
 from pathlib import Path
 from datetime import datetime
 import jinja2
@@ -86,7 +90,6 @@ async def test_template_rendering():
                 all_passed = False
         
         # Save rendered HTML for inspection
-        import tempfile
         output_path = Path(tempfile.gettempdir()) / "rendered_template.html"
         output_path.write_text(html_content)
         print(f"✓ Rendered HTML saved to: {output_path}")
@@ -95,17 +98,25 @@ async def test_template_rendering():
         
     except Exception as e:
         print(f"❌ Template rendering failed: {e}")
+        # Import traceback only when needed for error reporting
         import traceback
         traceback.print_exc()
         return False
 
 
 async def test_api_compatibility():
-    """Test that the API models are compatible."""
+    """
+    Test that the API models are compatible.
+    
+    Note: Imports are done inside this function to handle cases where
+    FastAPI and other web dependencies may not be installed (e.g., in
+    lightweight testing environments).
+    """
     
     print("\nTesting API compatibility...")
     
     try:
+        # Delayed imports to handle optional dependencies gracefully
         from src.template.content.content_renderer import (
             ContentData,
             ContentRenderRequest,
@@ -134,6 +145,7 @@ async def test_api_compatibility():
         
     except Exception as e:
         print(f"❌ API compatibility test failed: {e}")
+        # Import traceback only when needed for error reporting
         import traceback
         traceback.print_exc()
         return False

@@ -6,6 +6,7 @@ a lightweight HTML renderer based on litehtml.
 """
 
 import asyncio
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 from pydantic import BaseModel
@@ -92,7 +93,6 @@ class HtmlKitRenderer:
         # Add custom filters
         def format_time(unix_timestamp):
             """Format Unix timestamp to readable date/time string."""
-            from datetime import datetime
             dt = datetime.fromtimestamp(unix_timestamp)
             return f"{dt.month}月{dt.day}日 {dt.hour:02d}:{dt.minute:02d}"
         
