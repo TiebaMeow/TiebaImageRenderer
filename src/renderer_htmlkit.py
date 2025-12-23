@@ -50,7 +50,7 @@ class HtmlKitRenderer:
                         raise RuntimeError(
                             "nonebot-plugin-htmlkit is not installed. "
                             "Please install it following the instructions at: "
-                            "https://github.com/nonebot/plugin-htmlkit#%E6%9E%84%E5%BB%BA%E8%AF%B4%E6%98%8E"
+                            "https://github.com/nonebot/plugin-htmlkit#readme"
                         ) from e
     
     async def render(self, template_path: str | Path, params: RenderParam) -> tuple[bytes, bool]:
@@ -107,7 +107,7 @@ class HtmlKitRenderer:
         # Convert HTML to image
         screenshot = await self._html_to_pic(
             html=html_content,
-            base_url=f"file://{template_path.parent.as_posix()}",
+            base_url=template_path.parent.as_uri(),  # Use as_uri() for proper file URL
             max_width=float(width),
             dpi=96.0 * config.renderer_scale,
             image_format="jpeg",

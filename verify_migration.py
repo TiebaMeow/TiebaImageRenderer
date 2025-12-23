@@ -86,7 +86,8 @@ async def test_template_rendering():
                 all_passed = False
         
         # Save rendered HTML for inspection
-        output_path = Path("/tmp/rendered_template.html")
+        import tempfile
+        output_path = Path(tempfile.gettempdir()) / "rendered_template.html"
         output_path.write_text(html_content)
         print(f"✓ Rendered HTML saved to: {output_path}")
         

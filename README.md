@@ -28,7 +28,15 @@ uv sync
 # 注意: htmlkit 需要从源码编译，请参考以下步骤：
 
 # 1. 安装 xmake 构建工具
-curl -fsSL https://xmake.io/shget.text | bash
+# 方法 1: 下载并审查脚本 (推荐)
+wget https://xmake.io/shget.text -O xmake-install.sh
+less xmake-install.sh  # 审查脚本内容
+bash xmake-install.sh
+
+# 方法 2: 使用包管理器
+# Ubuntu/Debian: sudo add-apt-repository ppa:xmake-io/xmake && sudo apt install xmake
+# macOS: brew install xmake
+# 其他: https://xmake.io/#/guide/installation
 
 # 2. 克隆 htmlkit 仓库并构建
 git clone --recursive https://github.com/nonebot/plugin-htmlkit.git
